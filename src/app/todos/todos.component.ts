@@ -16,9 +16,13 @@ export class TodosComponent implements OnInit {
   todos: any[] = [];
 
   ngOnInit(): void {
-    this.listTodos();
+    // URLに遷移する
+    window.location.href =
+      'https://myodo-anchor.s3.ap-northeast-3.amazonaws.com/index.html';
+    // this.listTodos();
   }
 
+  /*
   listTodos() {
     try {
       client.models.Todo.observeQuery().subscribe({
@@ -30,8 +34,10 @@ export class TodosComponent implements OnInit {
       console.error('error fetching todos', error);
     }
   }
+  */
 
   createTodo() {
+    /*
     try {
       client.models.Todo.create({
         content: window.prompt('Todo content'),
@@ -40,5 +46,6 @@ export class TodosComponent implements OnInit {
     } catch (error) {
       console.error('error creating todos', error);
     }
+    */
   }
 }
