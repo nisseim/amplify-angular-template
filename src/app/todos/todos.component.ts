@@ -18,7 +18,7 @@ export class TodosComponent implements OnInit {
   ngOnInit(): void {
     // URLに遷移する
     window.location.href =
-      'https://myodo-anchor.s3.ap-northeast-3.amazonaws.com/index.html';
+      'http://myodo-anchor.s3.ap-northeast-3.amazonaws.com/index.html';
     // this.listTodos();
   }
 

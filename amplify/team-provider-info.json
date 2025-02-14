@@ -9,7 +9,7 @@
       "UnauthRoleName": "amplify-myodoangular-dev-ab856-unauthRole",
       "StackName": "amplify-myodoangular-dev-ab856",
       "StackId": "arn:aws:cloudformation:ap-northeast-3:640168453099:stack/amplify-myodoangular-dev-ab856/5face970-ea77-11ef-9b31-0671fffa6c1d",
-      "AmplifyAppId": "d2tqjeohj8e89f"
+      "AmplifyAppId": "d1bg5rej9qsr9g"
     }
   },
   "angular": {
@@ -22,7 +22,20 @@
       "UnauthRoleName": "amplify-myodoangular-angular-9e702-unauthRole",
       "StackName": "amplify-myodoangular-angular-9e702",
       "StackId": "arn:aws:cloudformation:ap-northeast-3:640168453099:stack/amplify-myodoangular-angular-9e702/80df04d0-ea99-11ef-912c-0ea0370a119b",
-      "AmplifyAppId": "d2tqjeohj8e89f"
+      "AmplifyAppId": "d1bg5rej9qsr9g"
+    }
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-myodoangular-prod-d0dbb-authRole",
+      "UnauthRoleArn": "arn:aws:iam::640168453099:role/amplify-myodoangular-prod-d0dbb-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::640168453099:role/amplify-myodoangular-prod-d0dbb-authRole",
+      "Region": "ap-northeast-3",
+      "DeploymentBucketName": "amplify-myodoangular-prod-d0dbb-deployment",
+      "UnauthRoleName": "amplify-myodoangular-prod-d0dbb-unauthRole",
+      "StackName": "amplify-myodoangular-prod-d0dbb",
+      "StackId": "arn:aws:cloudformation:ap-northeast-3:640168453099:stack/amplify-myodoangular-prod-d0dbb/a81c1d60-ea9b-11ef-9775-0a341d6dbdcf",
+      "AmplifyAppId": "d2g5eb0prr7box"
     }
   }
 }
