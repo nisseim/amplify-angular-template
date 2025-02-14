@@ -16,7 +16,7 @@ frontend:
   artifacts:
     baseDirectory: dist/amplify-angular-template/browser
     files:
-      - '**/*'
+      - "**/*"
   cache:
     paths:
       - .npm/**/*
