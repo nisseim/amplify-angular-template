@@ -69,12 +69,10 @@ export class TodosComponent implements OnInit {
                 })
                 .then((result) => {
                   console.log('Success:', result);
+
                   if (result['message'] === 'Login successful') {
                     console.log('ログイン成功');
                     // デバッグ用の Cookie を一旦セット
-                    document.cookie =
-                      'testcookie=hello; path=/; domain=.nisseim.co.jp; Secure; SameSite=None';
-                    console.log(document.cookie);
 
                     console.log('Debug Cookies:', result.debug_cookies);
 
