@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../../amplify/data/resource';
 import { liff } from '@line/liff';
-import { ParameterService } from '../parameter.service';
+// import { ParameterService } from '../parameter.service';
 
 const client = generateClient<Schema>();
 
@@ -15,20 +15,24 @@ const client = generateClient<Schema>();
   styleUrl: './todos.component.css',
 })
 export class TodosComponent implements OnInit {
+  /*
   password: string | undefined;
 
   constructor(private parameterService: ParameterService) {}
+  
 
   async getLinePassword(): Promise<any> {
     try {
       const response = await API.get(this.apiName, this.path, {});
       console.log('Parameter Store response:', response);
+
       return response;
     } catch (error) {
       console.error('Error fetching line password:', error);
       throw error;
     }
   }
+  */
 
   todos: any[] = [];
 

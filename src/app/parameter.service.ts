@@ -1,4 +1,6 @@
 // src/app/parameter.service.ts
+
+/*
 import { Injectable } from '@angular/core';
 import { Auth } from 'aws-amplify';
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
@@ -12,10 +14,9 @@ export class ParameterService {
 
   constructor() {}
 
-  /**
-   * Amplify Auth 経由で取得した認証情報を用い、
-   * SSM の /line/password パラメータを取得する
-   */
+  // Amplify Auth 経由で取得した認証情報を用い、
+  //SSM の /line/password パラメータを取得する
+
   async getLinePassword(): Promise<string | undefined> {
     try {
       // Cognito Identity Pool 経由で認証情報を取得
@@ -42,3 +43,4 @@ export class ParameterService {
     }
   }
 }
+*/
