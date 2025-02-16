@@ -36,6 +36,11 @@
       "StackName": "amplify-myodoangular-prod-d0dbb",
       "StackId": "arn:aws:cloudformation:ap-northeast-3:640168453099:stack/amplify-myodoangular-prod-d0dbb/a81c1d60-ea9b-11ef-9775-0a341d6dbdcf",
       "AmplifyAppId": "d2g5eb0prr7box"
+    },
+    "categories": {
+      "function": {
+        "passFunction": {}
+      }
     }
   }
 }
