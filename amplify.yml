@@ -1,10 +1,4 @@
 version: 1
-backend:
-  phases:
-    build:
-      commands:
-        - npm ci --cache .npm --prefer-offline
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
     preBuild:
@@ -13,6 +7,11 @@ frontend:
     build:
       commands:
         - npx ng build --configuration=production
+    postBuild:
+      commands:
+        # Linux 用の sed コマンドでプレースホルダーを置換
+        - sed -i 's/\$LIFFID/'"$LIFFID"'/g' dist/amplify-angular-template/browser/index.html
+        - sed -i 's/\$PASSWORD/'"$PASSWORD"'/g' dist/amplify-angular-template/browser/index.html
   artifacts:
     baseDirectory: dist/amplify-angular-template/browser
     files:
