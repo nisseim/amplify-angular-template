@@ -23,7 +23,8 @@ export class TodosComponent implements OnInit {
 
       // LINEブラウザでなければエラーで終了
       if (!isInClient) {
-        console.error('LINEブラウザでアクセスしてください。');
+        alert('LINEブラウザからアクセスしてください。');
+        window.close();
         return;
       }
 
