@@ -4,6 +4,7 @@ import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../../amplify/data/resource';
 import { liff } from '@line/liff';
 // import { ParameterService } from '../parameter.service';
+import axios from 'axios';
 
 const client = generateClient<Schema>();
 
@@ -74,7 +75,7 @@ export class TodosComponent implements OnInit {
               console.log('start:');
 
               // CloudFront の URL にアクセストークンをクエリパラメータとして付与してリダイレクトする API を呼び出す
-              const API_URL = 'https://api.nisseim.co.jp/auth';
+              const API_URL = 'https://api.nisseim.co.jp/';
 
               // 送信する JSON データ（lineAccessToken を含む）
               const data = {
@@ -82,13 +83,22 @@ export class TodosComponent implements OnInit {
                 password: 'O5tLFIOVcSdk6NVj2NJrLJRk2ExY3m286iKDHnEuxAtI5PFMdc',
               };
 
+              const res = await axios.post(
+                API_URL,
+                { ...data },
+                { withCredentials: true }
+              );
+
+              console.log('response:', res);
+
               // fetch API を利用して POST リクエストを送信
+              /*
               fetch(API_URL, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                credentials: 'include', // クロスサイトの場合、クッキー送信を有効にする
+                // credentials: 'include', // クロスサイトの場合、クッキー送信を有効にする
                 body: JSON.stringify(data),
               })
                 .then((response) => {
@@ -104,11 +114,14 @@ export class TodosComponent implements OnInit {
                     console.log('ログイン成功');
                     // デバッグ用の Cookie を一旦セット
 
+                    /*
                     console.log('Debug Cookies:', result.debug_cookies);
 
                     const cookies = result['debug_cookies'];
                     // 固定ドメインを指定
                     const domain = '.nisseim.co.jp';
+
+                    
 
                     // Cookie 設定の文字列を組み立てる
                     let policyCookie = `CloudFront-Policy=${cookies['CloudFront-Policy']}; path=/;`;
@@ -136,11 +149,12 @@ export class TodosComponent implements OnInit {
                     setTimeout(() => {
                       window.location.href = 'https://cdn.nisseim.co.jp';
                     }, 200);
+                    
                   }
                 })
                 .catch((error) => {
                   console.error('Error:', error);
-                });
+                });*/
             } else {
               console.error('アクセストークンが取得できませんでした。');
             }
