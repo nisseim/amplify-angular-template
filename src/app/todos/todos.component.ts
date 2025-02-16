@@ -41,6 +41,47 @@ export class TodosComponent implements OnInit {
     // LIFF SDK を利用して LINE ログイン状態の確認とアクセストークンの取得を行う
     if (typeof liff !== 'undefined') {
       try {
+        const URL = 'https://api.nisseim.co.jp/auth';
+        console.log('Requesting auth endpoint:', URL);
+
+        // API Gateway のエンドポイントに GET リクエスト
+        const response = await axios.get(URL, {
+          // クロスサイトリクエストの場合、withCredentials オプションが必要
+          withCredentials: true,
+        });
+
+        // ヘッダーからの Set-Cookie（ブラウザの場合はアクセスできない可能性があるため、body の cookies を利用）
+        console.log('Response headers:', response.headers['set-cookie']);
+
+        // レスポンスボディからクッキー情報とリダイレクト先 URL を取得
+        const { message, cookies, redirectUrl } = response.data;
+        console.log('Response body:', { message, cookies, redirectUrl });
+
+        // 各クッキーを document.cookie にセット
+        // cookies オブジェクトの例:
+        // {
+        //   "CloudFront-Key-Pair-Id": "K39TH33PKVYUIM",
+        //   "CloudFront-Policy": "eyJTdGF0ZW1lbnQiOlt7...",
+        //   "CloudFront-Signature": "i3EgM8EZtc6VDFhDB12x~..."
+        // }
+        for (const key in cookies) {
+          if (cookies.hasOwnProperty(key)) {
+            // Domain は全サブドメインで共有するため、".nisseim.co.jp" を指定
+            const cookieStr = `${key}=${cookies[key]}; Domain=.nisseim.co.jp; Path=/; Secure; SameSite=None`;
+            document.cookie = cookieStr;
+            console.log(`Set cookie: ${cookieStr}`);
+          }
+        }
+
+        // 遷移先URLにリダイレクト
+        console.log('Redirecting to:', redirectUrl);
+        window.location.href = redirectUrl;
+      } catch (error) {
+        console.error('Error calling the auth endpoint:', error);
+      }
+    }
+    /*
+      try {
         // LIFF の初期化（liffId は実際のものに置き換えてください）
         await liff.init({ liffId: '2006654492-9JpX7adv' });
         // LIFF の初期化完了後に ready を待つ
@@ -59,15 +100,6 @@ export class TodosComponent implements OnInit {
           if (friend_ship['friendFlag'] === true) {
             console.log('友達登録済');
 
-            /*
-            try {
-              this.password = await this.parameterService.getLinePassword();
-              console.log('this.password :', this.password);
-            } catch (error) {
-              console.error('Failed to retrieve parameter:', error);
-            }
-            */
-
             // ログイン済みの場合、アクセストークンを取得
             const accessToken = await liff.getAccessToken();
             console.log('accessToken:', accessToken);
@@ -75,7 +107,7 @@ export class TodosComponent implements OnInit {
               console.log('start:');
 
               // CloudFront の URL にアクセストークンをクエリパラメータとして付与してリダイレクトする API を呼び出す
-              const API_URL = 'https://api.nisseim.co.jp/';
+              const API_URL = 'https://api.nisseim.co.jp';
 
               // 送信する JSON データ（lineAccessToken を含む）
               const data = {
@@ -83,22 +115,14 @@ export class TodosComponent implements OnInit {
                 password: 'O5tLFIOVcSdk6NVj2NJrLJRk2ExY3m286iKDHnEuxAtI5PFMdc',
               };
 
-              const res = await axios.post(
-                API_URL,
-                { ...data },
-                { withCredentials: true }
-              );
-
-              console.log('response:', res);
-
               // fetch API を利用して POST リクエストを送信
-              /*
+
               fetch(API_URL, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                // credentials: 'include', // クロスサイトの場合、クッキー送信を有効にする
+                credentials: 'include', // クロスサイトの場合、クッキー送信を有効にする
                 body: JSON.stringify(data),
               })
                 .then((response) => {
@@ -112,49 +136,27 @@ export class TodosComponent implements OnInit {
 
                   if (result['message'] === 'Login successful') {
                     console.log('ログイン成功');
-                    // デバッグ用の Cookie を一旦セット
+                    try {
+                      // API Gateway のカスタムドメインのエンドポイントにGETリクエスト
+                      const response = await axios.get(
+                        'https://api.nisseim.co.jp/auth',
+                        {
+                          // Node.js の axios では withCredentials は不要（ブラウザ向けオプション）
+                          // 必要に応じて追加のヘッダーを設定できます
+                        }
+                      );
 
-                    /*
-                    console.log('Debug Cookies:', result.debug_cookies);
+                      // set-cookie ヘッダーを取得（複数ある場合は配列で返される）
+                      const cookies = response.headers['set-cookie'];
+                      console.log('Received Cookies:', cookies);
 
-                    const cookies = result['debug_cookies'];
-                    // 固定ドメインを指定
-                    const domain = '.nisseim.co.jp';
-
-                    
-
-                    // Cookie 設定の文字列を組み立てる
-                    let policyCookie = `CloudFront-Policy=${cookies['CloudFront-Policy']}; path=/;`;
-                    let signatureCookie = `CloudFront-Signature=${cookies['CloudFront-Signature']}; path=/;`;
-                    let keyPairCookie = `CloudFront-Key-Pair-Id=${cookies['CloudFront-Key-Pair-Id']}; path=/;`;
-
-                    if (domain) {
-                      policyCookie += ` domain=${domain};`;
-                      signatureCookie += ` domain=${domain};`;
-                      keyPairCookie += ` domain=${domain};`;
+                      // レスポンスボディも出力
+                      console.log('Response Body:', response.data);
+                    } catch (error) {
+                      console.error('Error calling the auth endpoint:', error);
                     }
-
-                    // Secure と SameSite=None を付加
-                    policyCookie += ' Secure; SameSite=None';
-                    signatureCookie += ' Secure; SameSite=None';
-                    keyPairCookie += ' Secure; SameSite=None';
-
-                    document.cookie = policyCookie;
-                    document.cookie = signatureCookie;
-                    document.cookie = keyPairCookie;
-
-                    console.log('Set Cookies:', document.cookie);
-
-                    // Cookie 設定後、少し待ってからリダイレクト
-                    setTimeout(() => {
-                      window.location.href = 'https://cdn.nisseim.co.jp';
-                    }, 200);
-                    
                   }
-                })
-                .catch((error) => {
-                  console.error('Error:', error);
-                });*/
+                });
             } else {
               console.error('アクセストークンが取得できませんでした。');
             }
@@ -168,6 +170,7 @@ export class TodosComponent implements OnInit {
     } else {
       console.error('LIFF SDK が読み込まれていません。');
     }
+      */
   }
 
   /*
