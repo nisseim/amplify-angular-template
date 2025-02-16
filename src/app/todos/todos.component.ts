@@ -19,8 +19,15 @@ export class TodosComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     // LIFF SDK を利用して LINE ログイン状態の確認とアクセストークンの取得を行う
     if (typeof liff !== 'undefined') {
+      const isInClient = liff.isInClient();
+
+      // LINEブラウザでなければエラーで終了
+      if (!isInClient) {
+        console.error('LINEブラウザでアクセスしてください。');
+        return;
+      }
+
       const liffId = environment.liffid;
-      console.log('liffId:', liffId);
 
       try {
         // LIFF の初期化（liffId は実際のものに置き換えてください）
