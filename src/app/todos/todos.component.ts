@@ -43,6 +43,7 @@ export class TodosComponent implements OnInit {
 
             // ログイン済みの場合、アクセストークンを取得
             const accessToken = await liff.getAccessToken();
+            const passwordValue = environment.password;
             // console.log('accessToken:', accessToken);
             if (accessToken) {
               try {
@@ -51,6 +52,9 @@ export class TodosComponent implements OnInit {
 
                 // API Gateway のエンドポイントに GET リクエスト
                 const response = await axios.get(URL, {
+                  params: {
+                    password: passwordValue,
+                  },
                   // クロスサイトリクエストの場合、withCredentials オプションが必要
                   withCredentials: true,
                 });
