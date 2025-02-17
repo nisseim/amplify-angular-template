@@ -44,7 +44,7 @@ export class TodosComponent implements OnInit {
         } else {
           // 友だち登録状態を確認
           const friend_ship = await liff.getFriendship();
-          console.log('friend_ship:', friend_ship['friendFlag']);
+          // console.log('friend_ship:', friend_ship['friendFlag']);
 
           if (friend_ship['friendFlag'] === true) {
             console.log('友達登録済');
@@ -55,7 +55,7 @@ export class TodosComponent implements OnInit {
             // console.log('accessToken:', accessToken);
             if (accessToken) {
               try {
-                const URL = 'https://api.nisseim.co.jp/auth';
+                const URL = 'https://api.myodo-anchor.jp/auth';
                 console.log('Requesting auth endpoint:', URL);
 
                 // API Gateway のエンドポイントに GET リクエスト
