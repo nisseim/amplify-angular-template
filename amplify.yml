@@ -11,6 +11,8 @@ frontend:
       commands:
         # Linux 用の sed コマンドでプレースホルダーを置換
         - sed -i 's/\$LIFFID/'"$LIFFID"'/g' dist/amplify-angular-template/browser/index.html
+        - sed -i 's/\$LIFFID2/'"$LIFFID2"'/g' dist/amplify-angular-template/browser/index.html
+        - sed -i 's/\$LIFFID3/'"$LIFFID3"'/g' dist/amplify-angular-template/browser/index.html
         - sed -i 's/\$PASSWORD/'"$PASSWORD"'/g' dist/amplify-angular-template/browser/index.html
   artifacts:
     baseDirectory: dist/amplify-angular-template/browser
