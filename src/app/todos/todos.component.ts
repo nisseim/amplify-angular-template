@@ -31,6 +31,7 @@ export class TodosComponent implements OnInit {
       const input = environment.liffid;
       const parts = input.split("_");
 
+      /*
       const searchParams = new URLSearchParams(window.location.search);
       const id = searchParams.get('access_id');
       console.log('access_id:', id);
@@ -48,8 +49,9 @@ export class TodosComponent implements OnInit {
       } else {
         liffId = parts[0];
       }
+      */
 
-      // const liffId = parts[0];
+      const liffId = parts[0];
 
       try {
         // LIFF の初期化（liffId は実際のものに置き換えてください）
@@ -83,7 +85,7 @@ export class TodosComponent implements OnInit {
                 const response = await axios.get(URL, {
                   params: {
                     password  : passwordValue,
-                    access_id : id,
+                    access_id : "1",
                   },
                   // クロスサイトリクエストの場合、withCredentials オプションが必要
                   withCredentials: true,
