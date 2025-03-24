@@ -5,6 +5,7 @@ import type { Schema } from '../../../amplify/data/resource';
 import { liff } from '@line/liff';
 import axios from 'axios';
 import { environment } from '../../environments/environment';
+import { ActivatedRoute } from '@angular/router';
 
 const client = generateClient<Schema>();
 
@@ -16,6 +17,9 @@ const client = generateClient<Schema>();
   styleUrl: './todos.component.css',
 })
 export class TodosComponent implements OnInit {
+  accessId: string | null = null;
+  constructor(private route: ActivatedRoute) {}
+
   async ngOnInit(): Promise<void> {
     // LIFF SDK を利用して LINE ログイン状態の確認とアクセストークンの取得を行う
     if (typeof liff !== 'undefined') {
@@ -30,7 +34,12 @@ export class TodosComponent implements OnInit {
 
       const liffId = environment.liffid.split('_')[0];
       // const liffId = environment.liffid;
-      alert("test" + liffId)
+
+      this.route.queryParamMap.subscribe(params => {
+        this.accessId = params.get('access_id');
+      });
+
+      alert('access_id: ' + this.accessId);
 
       try {
         // LIFF の初期化（liffId は実際のものに置き換えてください）
