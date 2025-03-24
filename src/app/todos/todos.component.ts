@@ -17,6 +17,8 @@ const client = generateClient<Schema>();
 })
 export class TodosComponent implements OnInit {
   async ngOnInit(): Promise<void> {
+    alert("test0")
+
     // LIFF SDK を利用して LINE ログイン状態の確認とアクセストークンの取得を行う
     if (typeof liff !== 'undefined') {
       const isInClient = liff.isInClient();
