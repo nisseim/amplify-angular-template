@@ -30,13 +30,10 @@ export class TodosComponent implements OnInit {
       }
 
       const params = new URLSearchParams(window.location.search);
-      const accessId = params.get('access_id');
+      const accessId = Number(params.get('access_id'));
 
-      alert('access_id: ' + accessId);
-
-      const liffId = environment.liffid.split('_')[0];
+      const liffId = environment.liffid.split('_')[accessId];
       // const liffId = environment.liffid;
-
 
       try {
         // LIFF の初期化（liffId は実際のものに置き換えてください）
