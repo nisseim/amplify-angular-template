@@ -58,11 +58,7 @@ export class TodosComponent implements OnInit {
                 const URL = 'https://api.myodo-anchor.jp/auth';
                 console.log('Requesting auth endpoint:', URL);
 
-                // 現在のページのURLからパラメータを取得
-                const currentUrl = new URL(window.location.href);
-                const searchParams = new URLSearchParams(currentUrl.search);
-
-                // 必要なパラメータを取り出す（例: foo など）
+                const searchParams = new URLSearchParams(window.location.search);
                 const id = searchParams.get('access_id');
 
                 // API Gateway のエンドポイントに GET リクエスト
