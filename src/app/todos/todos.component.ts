@@ -17,8 +17,8 @@ const client = generateClient<Schema>();
   styleUrl: './todos.component.css',
 })
 export class TodosComponent implements OnInit {
-  accessId: string | null = null;
-  constructor(private route: ActivatedRoute) {}
+  const params = new URLSearchParams(window.location.search);
+  const accessId = params.get('access_id');
 
   async ngOnInit(): Promise<void> {
     // LIFF SDK を利用して LINE ログイン状態の確認とアクセストークンの取得を行う
@@ -31,15 +31,11 @@ export class TodosComponent implements OnInit {
         window.close();
         return;
       }
+      alert('access_id: ' + accessId);
 
       const liffId = environment.liffid.split('_')[0];
       // const liffId = environment.liffid;
 
-      this.route.queryParamMap.subscribe(params => {
-        this.accessId = params.get('access_id');
-      });
-
-      alert('access_id: ' + this.accessId);
 
       try {
         // LIFF の初期化（liffId は実際のものに置き換えてください）
