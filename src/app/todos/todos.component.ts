@@ -37,9 +37,13 @@ export class TodosComponent implements OnInit {
 
       let liffId = '';
 
-      if (String(id) == "2") {
+      // access_id が null または parts の範囲外を防ぐ
+      if (!id) {
+        console.error('access_id が指定されていません');
+        liffId = parts[0];
+      } else if (String(id) === '2') {
         liffId = parts[1];
-      } else if (String(id) == "3") {
+      } else if (String(id) === '3') {
         liffId = parts[2];
       } else {
         liffId = parts[0];
