@@ -66,7 +66,8 @@ export class TodosComponent implements OnInit {
                 // API Gateway のエンドポイントに GET リクエスト
                 const response = await axios.get(URL, {
                   params: {
-                    password: passwordValue,
+                    password  : passwordValue,
+                    access_id : accessId,
                   },
                   // クロスサイトリクエストの場合、withCredentials オプションが必要
                   withCredentials: true,
