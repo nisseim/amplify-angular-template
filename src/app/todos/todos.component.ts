@@ -28,7 +28,18 @@ export class TodosComponent implements OnInit {
         return;
       }
 
-      const liffId = environment.liffid;
+      const searchParams = new URLSearchParams(window.location.search);
+      const id = searchParams.get('access_id');
+
+      let liffId = environment.liffid;
+
+      if (String(id) == "2") {
+        liffId = environment.liffid2;
+      }
+
+      if (String(id) == "3") {
+        liffId = environment.liffid3;
+      }
 
       try {
         // LIFF の初期化（liffId は実際のものに置き換えてください）
@@ -58,8 +69,7 @@ export class TodosComponent implements OnInit {
                 const URL = 'https://api.myodo-anchor.jp/auth';
                 console.log('Requesting auth endpoint:', URL);
 
-                const searchParams = new URLSearchParams(window.location.search);
-                const id = searchParams.get('access_id');
+
 
                 // API Gateway のエンドポイントに GET リクエスト
                 const response = await axios.get(URL, {
