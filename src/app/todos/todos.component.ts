@@ -22,56 +22,51 @@ export class TodosComponent implements OnInit {
       console.error('LIFF SDK が読み込まれていません。');
       return;
     }
-
     if (!liff.isInClient()) {
       alert('LINEブラウザからアクセスしてください。');
       window.close();
       return;
     }
-
+  
     const liffId = environment.liffId.split('_')[0];
-
+  
     try {
       await liff.init({ liffId: liffId });
-      liff.ready(async () => {
-        console.log('LIFF ready');
-
-        if (!liff.isLoggedIn()) {
-          console.log('未ログイン: ログイン画面へ遷移します。');
-          await liff.login();
-          return;
-        }
-
-        const friendship = await liff.getFriendship();
-        if (!friendship.friendFlag) {
-          console.error('友達登録がされていません。');
-          return;
-        }
-
-        const accessToken = liff.getAccessToken();
-        if (!accessToken) {
-          console.error('アクセストークンが取得できませんでした。');
-          return;
-        }
-
-        try {
-          const response = await axios.get('https://api.myodo-anchor.jp/auth', {
-            params: { password: environment.password, access_id: '1' },
-            withCredentials: true,
-          });
-
-          const { cookies, redirectUrl } = response.data;
-          for (const key in cookies) {
-            document.cookie = `${key}=${cookies[key]}; Domain=.nisseim.co.jp; Path=/; Secure; SameSite=None`;
-          }
-
-          setTimeout(() => window.location.href = redirectUrl, 50);
-        } catch (err) {
-          console.error('Error calling auth endpoint:', err);
-        }
+      await liff.ready;                 // ← Promise版を await
+  
+      console.log('LIFF ready');
+  
+      if (!liff.isLoggedIn()) {
+        console.log('未ログイン: ログイン画面へ遷移します。');
+        await liff.login();
+        return;
+      }
+  
+      const { friendFlag } = await liff.getFriendship();
+      if (!friendFlag) {
+        console.error('友達登録がされていません。');
+        return;
+      }
+  
+      const accessToken = liff.getAccessToken();
+      if (!accessToken) {
+        console.error('アクセストークンが取得できませんでした。');
+        return;
+      }
+  
+      const response = await axios.get('https://api.myodo-anchor.jp/auth', {
+        params: { password: environment.password, access_id: '1' },
+        withCredentials: true,
       });
+  
+      const { cookies, redirectUrl } = response.data;
+      for (const key in cookies) {
+        document.cookie = `${key}=${cookies[key]}; Domain=.nisseim.co.jp; Path=/; Secure; SameSite=None`;
+      }
+  
+      setTimeout(() => window.location.href = redirectUrl, 50);
     } catch (err) {
-      console.error('LIFF 初期化エラー:', err);
+      console.error('エラー:', err);
     }
   }
 
