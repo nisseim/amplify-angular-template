@@ -28,7 +28,8 @@ export class TodosComponent implements OnInit {
         return;
       }
 
-      const liffId = environment.liffid;
+      const liffId = environment.liffid.split('_')[0];
+      //const liffId = environment.liffid;
 
       try {
         // LIFF の初期化（liffId は実際のものに置き換えてください）
