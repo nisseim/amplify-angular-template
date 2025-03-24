@@ -32,7 +32,7 @@ export class TodosComponent implements OnInit {
     const liffId = environment.liffId.split('_')[0];
 
     try {
-      await liff.init({ liffId });
+      await liff.init({ liffId: liffId });
       liff.ready(async () => {
         console.log('LIFF ready');
 
