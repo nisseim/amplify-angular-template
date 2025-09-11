@@ -68,6 +68,9 @@ export class TodosComponent implements OnInit {
                 const URL = 'https://api.myodo-anchor.jp/auth';
                 console.log('Requesting auth endpoint:', URL);
 
+                // デバッグ用アラート
+                alert('API呼び出し開始');
+
                 // API Gateway のエンドポイントに GET リクエスト（LIFF access tokenを追加）
                 const response = await axios.get(URL, {
                   params: {
@@ -77,11 +80,17 @@ export class TodosComponent implements OnInit {
                   },
                   // クロスサイトリクエストの場合、withCredentials オプションが必要
                   withCredentials: true,
+                  timeout: 30000, // 30秒タイムアウト
                 });
+
+                // レスポンス受信確認
+                alert(`API応答受信: ${response.status}`);
 
                 // レスポンスボディからクッキー情報とリダイレクト先 URL を取得
                 const { message, cookies, redirectUrl } = response.data;
                 console.log('Response body:', { message, cookies, redirectUrl });
+
+                alert(`リダイレクトURL: ${redirectUrl}`);
 
                 // 各クッキーを document.cookie にセット
                 if (cookies) {
@@ -97,23 +106,37 @@ export class TodosComponent implements OnInit {
 
                 // LIFF専用リダイレクト
                 if (redirectUrl) {
+                  alert('リダイレクト実行中...');
                   try {
                     // LIFF内部ブラウザを閉じて外部ブラウザで開く
                     liff.openWindow({
                       url: redirectUrl,
                       external: true
                     });
+                    alert('LIFF openWindow 成功');
                   } catch (liffError) {
                     console.log('LIFF openWindow failed, using standard redirect');
+                    alert('通常リダイレクト実行中...');
                     // 通常のリダイレクト
                     setTimeout(() => {
                       console.log('Redirecting to:', redirectUrl);
                       window.location.href = redirectUrl;
                     }, 50);
                   }
+                } else {
+                  alert('リダイレクトURLが空です');
                 }
               } catch (error) {
                 console.error('Error calling the auth endpoint:', error);
+                
+                // 詳細なエラー情報をアラート表示
+                if (error.response) {
+                  alert(`APIエラー: ${error.response.status} - ${error.response.statusText}`);
+                } else if (error.request) {
+                  alert(`ネットワークエラー: レスポンスなし`);
+                } else {
+                  alert(`エラー: ${error.message}`);
+                }
               }
             } else {
               console.error('アクセストークンが取得できませんでした。');
