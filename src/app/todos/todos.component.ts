@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../../amplify/data/resource';
 import { liff } from '@line/liff';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { environment } from '../../environments/environment';
 import { ActivatedRoute } from '@angular/router';
 
@@ -30,10 +30,11 @@ export class TodosComponent implements OnInit {
       }
 
       const params = new URLSearchParams(window.location.search);
-      const accessId = Number(params.get('access_id')) || 1; // デフォルト値を1に設定
+      const accessIdParam = params.get('access_id');
+      const accessId: number = accessIdParam ? parseInt(accessIdParam, 10) : 1; // デフォルト値を1に設定
 
       // LIFF IDのマッピング（Lambda側と同じロジック）
-      const liffIdMap = {
+      const liffIdMap: Record<number, string> = {
         1: "2006654492-V29yE2A0",
         2: "2006654492-J8WgB7qm", 
         3: "2006654492-aWNRDwl7"
@@ -75,7 +76,7 @@ export class TodosComponent implements OnInit {
                   params: {
                     password: passwordValue,
                     access_id: accessId,
-                    liff_access_token: accessToken  // ← LIFF access tokenを追加
+                    liff_access_token: accessToken  // LIFF access tokenを追加
                   },
                   // クロスサイトリクエストの場合、withCredentials オプションが必要
                   withCredentials: true,
@@ -86,12 +87,14 @@ export class TodosComponent implements OnInit {
                 console.log('Lambda応答:', { message, redirectUrl, userSaveResult });
 
                 // 各クッキーを document.cookie にセット
-                for (const key in cookies) {
-                  if (cookies.hasOwnProperty(key)) {
-                    // Domain は全サブドメインで共有するため、".myodo-anchor.jp" を指定
-                    const cookieStr = `${key}=${cookies[key]}; Domain=.myodo-anchor.jp; Path=/; Secure; SameSite=None`;
-                    document.cookie = cookieStr;
-                    console.log('クッキー設定:', key);
+                if (cookies && typeof cookies === 'object') {
+                  for (const key in cookies) {
+                    if (cookies.hasOwnProperty(key)) {
+                      // Domain は全サブドメインで共有するため、".myodo-anchor.jp" を指定
+                      const cookieStr = `${key}=${cookies[key]}; Domain=.myodo-anchor.jp; Path=/; Secure; SameSite=None`;
+                      document.cookie = cookieStr;
+                      console.log('クッキー設定:', key);
+                    }
                   }
                 }
 
@@ -107,17 +110,16 @@ export class TodosComponent implements OnInit {
                 }
 
                 // 遷移先URLにリダイレクト
-                setTimeout(() => {
-                  console.log('リダイレクト先:', redirectUrl);
-                  window.location.href = redirectUrl;
-                }, 500); // 少し時間を延ばしてログを確認しやすくする
-              } catch (error: unknown) {
+                if (redirectUrl) {
+                  setTimeout(() => {
+                    console.log('リダイレクト先:', redirectUrl);
+                    window.location.href = redirectUrl;
+                  }, 500);
+                }
+              } catch (error) {
                 console.error('認証エンドポイントエラー:', error);
-                if (error && typeof error === 'object' && 'response' in error) {
-                  const axiosError = error as { response?: { data?: any } };
-                  if (axiosError.response) {
-                    console.error('エラー詳細:', axiosError.response.data);
-                  }
+                if (axios.isAxiosError(error)) {
+                  console.error('エラー詳細:', error.response?.data);
                 }
               }
             } else {
@@ -125,7 +127,6 @@ export class TodosComponent implements OnInit {
             }
           } else {
             console.error('友達登録がされていません。友達追加してください。');
-            // 友達追加を促すメッセージ表示やUIの改善が可能
           }
         }
       } catch (err) {
