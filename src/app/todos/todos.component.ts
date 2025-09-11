@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../../amplify/data/resource';
 import { liff } from '@line/liff';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { environment } from '../../environments/environment';
 import { ActivatedRoute } from '@angular/router';
 
@@ -30,8 +30,7 @@ export class TodosComponent implements OnInit {
       }
 
       const params = new URLSearchParams(window.location.search);
-      const accessIdParam = params.get('access_id');
-      const accessId: number = accessIdParam ? parseInt(accessIdParam, 10) : 1; // デフォルト値を1に設定
+      const accessId = Number(params.get('access_id')) || 1;
 
       // LIFF IDのマッピング（Lambda側と同じロジック）
       const liffIdMap: Record<number, string> = {
@@ -47,7 +46,7 @@ export class TodosComponent implements OnInit {
         await liff.init({ liffId: liffId });
         // LIFF の初期化完了後に ready を待つ
         await liff.ready;
-        console.log('LIFF初期化完了, LIFF ID:', liffId);
+        console.log('LIFF初期化完了');
 
         if (!liff.isLoggedIn()) {
           console.log('未ログイン: ログイン画面へ遷移します。');
@@ -56,87 +55,71 @@ export class TodosComponent implements OnInit {
         } else {
           // 友だち登録状態を確認
           const friend_ship = await liff.getFriendship();
-          console.log('友達登録状態:', friend_ship['friendFlag']);
 
           if (friend_ship['friendFlag'] === true) {
-            console.log('友達登録済み');
+            console.log('友達登録済');
 
             // ログイン済みの場合、アクセストークンを取得
             const accessToken = await liff.getAccessToken();
             const passwordValue = environment.password;
             
-            console.log('アクセストークン取得成功');
             if (accessToken) {
               try {
                 const URL = 'https://api.myodo-anchor.jp/auth';
-                console.log('認証エンドポイント呼び出し:', URL);
+                console.log('Requesting auth endpoint:', URL);
 
-                // API Gateway のエンドポイントに GET リクエスト（LIFF access tokenを含める）
+                // API Gateway のエンドポイントに GET リクエスト（LIFF access tokenを追加）
                 const response = await axios.get(URL, {
                   params: {
                     password: passwordValue,
                     access_id: accessId,
-                    liff_access_token: accessToken  // LIFF access tokenを追加
+                    liff_access_token: accessToken  // ← これが重要！
                   },
                   // クロスサイトリクエストの場合、withCredentials オプションが必要
                   withCredentials: true,
                 });
 
                 // レスポンスボディからクッキー情報とリダイレクト先 URL を取得
-                const { message, cookies, redirectUrl, userSaveResult } = response.data;
-                console.log('Lambda応答:', { message, redirectUrl, userSaveResult });
-                console.log('Lambda完全応答:', response);
+                const { message, cookies, redirectUrl } = response.data;
+                console.log('Response body:', { message, cookies, redirectUrl });
 
                 // 各クッキーを document.cookie にセット
-                if (cookies && typeof cookies === 'object') {
+                if (cookies) {
                   for (const key in cookies) {
                     if (cookies.hasOwnProperty(key)) {
                       // Domain は全サブドメインで共有するため、".myodo-anchor.jp" を指定
                       const cookieStr = `${key}=${cookies[key]}; Domain=.myodo-anchor.jp; Path=/; Secure; SameSite=None`;
                       document.cookie = cookieStr;
-                      console.log('クッキー設定:', key, 'Value:', cookies[key]);
+                      console.log('Set cookie:', key);
                     }
                   }
                 }
 
-                // ユーザー保存結果をログ出力
-                if (userSaveResult) {
-                  if (userSaveResult.action === 'created') {
-                    console.log('新規ユーザーをDynamoDBに保存しました:', userSaveResult.userId);
-                  } else if (userSaveResult.action === 'updated') {
-                    console.log('既存ユーザーの情報を更新しました:', userSaveResult.userId);
-                  } else if (userSaveResult.action === 'error') {
-                    console.error('ユーザー保存エラー:', userSaveResult.error);
+                // LIFF専用リダイレクト
+                if (redirectUrl) {
+                  try {
+                    // LIFF内部ブラウザを閉じて外部ブラウザで開く
+                    liff.openWindow({
+                      url: redirectUrl,
+                      external: true
+                    });
+                  } catch (liffError) {
+                    console.log('LIFF openWindow failed, using standard redirect');
+                    // 通常のリダイレクト
+                    setTimeout(() => {
+                      console.log('Redirecting to:', redirectUrl);
+                      window.location.href = redirectUrl;
+                    }, 50);
                   }
                 }
-
-                // リダイレクトURLの詳細確認
-                console.log('=== リダイレクト処理開始 ===');
-                
-                // 遷移先URLにリダイレクト
-                if (redirectUrl && typeof redirectUrl === 'string' && redirectUrl.length > 0) {
-                  alert(`リダイレクト実行: ${redirectUrl}`);
-                  
-                  // 即座にリダイレクト実行
-                  setTimeout(() => {
-                    console.log('リダイレクト実行中:', redirectUrl);
-                    window.location.href = redirectUrl;
-                  }, 100);
-                  
-                } else {
-                  alert(`リダイレクトURL無効: ${redirectUrl} (型: ${typeof redirectUrl})`);
-                }
               } catch (error) {
-                console.error('認証エンドポイントエラー:', error);
-                if (axios.isAxiosError(error)) {
-                  console.error('エラー詳細:', error.response?.data);
-                }
+                console.error('Error calling the auth endpoint:', error);
               }
             } else {
               console.error('アクセストークンが取得できませんでした。');
             }
           } else {
-            console.error('友達登録がされていません。友達追加してください。');
+            console.error('友達登録がされていません。');
           }
         }
       } catch (err) {
