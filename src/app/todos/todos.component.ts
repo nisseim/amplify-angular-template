@@ -111,24 +111,20 @@ export class TodosComponent implements OnInit {
                 }
 
                 // リダイレクトURLの詳細確認
-                console.log('リダイレクトURL確認:', redirectUrl);
-                console.log('リダイレクトURL型:', typeof redirectUrl);
-                console.log('リダイレクトURL存在:', !!redirectUrl);
-
+                console.log('=== リダイレクト処理開始 ===');
+                
                 // 遷移先URLにリダイレクト
-                if (redirectUrl) {
-                  console.log('リダイレクト実行準備:', redirectUrl);
+                if (redirectUrl && typeof redirectUrl === 'string' && redirectUrl.length > 0) {
+                  alert(`リダイレクト実行: ${redirectUrl}`);
+                  
+                  // 即座にリダイレクト実行
                   setTimeout(() => {
                     console.log('リダイレクト実行中:', redirectUrl);
-                    try {
-                      window.location.href = redirectUrl;
-                      console.log('リダイレクト実行完了');
-                    } catch (redirectError) {
-                      console.error('リダイレクトエラー:', redirectError);
-                    }
-                  }, 1000); // 1秒に延長
+                    window.location.href = redirectUrl;
+                  }, 100);
+                  
                 } else {
-                  console.error('リダイレクトURLが空です:', redirectUrl);
+                  alert(`リダイレクトURL無効: ${redirectUrl} (型: ${typeof redirectUrl})`);
                 }
               } catch (error) {
                 console.error('認証エンドポイントエラー:', error);
