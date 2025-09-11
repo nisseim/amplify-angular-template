@@ -85,6 +85,7 @@ export class TodosComponent implements OnInit {
                 // レスポンスボディからクッキー情報とリダイレクト先 URL を取得
                 const { message, cookies, redirectUrl, userSaveResult } = response.data;
                 console.log('Lambda応答:', { message, redirectUrl, userSaveResult });
+                console.log('Lambda完全応答:', response);
 
                 // 各クッキーを document.cookie にセット
                 if (cookies && typeof cookies === 'object') {
@@ -93,7 +94,7 @@ export class TodosComponent implements OnInit {
                       // Domain は全サブドメインで共有するため、".myodo-anchor.jp" を指定
                       const cookieStr = `${key}=${cookies[key]}; Domain=.myodo-anchor.jp; Path=/; Secure; SameSite=None`;
                       document.cookie = cookieStr;
-                      console.log('クッキー設定:', key);
+                      console.log('クッキー設定:', key, 'Value:', cookies[key]);
                     }
                   }
                 }
@@ -109,12 +110,25 @@ export class TodosComponent implements OnInit {
                   }
                 }
 
+                // リダイレクトURLの詳細確認
+                console.log('リダイレクトURL確認:', redirectUrl);
+                console.log('リダイレクトURL型:', typeof redirectUrl);
+                console.log('リダイレクトURL存在:', !!redirectUrl);
+
                 // 遷移先URLにリダイレクト
                 if (redirectUrl) {
+                  console.log('リダイレクト実行準備:', redirectUrl);
                   setTimeout(() => {
-                    console.log('リダイレクト先:', redirectUrl);
-                    window.location.href = redirectUrl;
-                  }, 500);
+                    console.log('リダイレクト実行中:', redirectUrl);
+                    try {
+                      window.location.href = redirectUrl;
+                      console.log('リダイレクト実行完了');
+                    } catch (redirectError) {
+                      console.error('リダイレクトエラー:', redirectError);
+                    }
+                  }, 1000); // 1秒に延長
+                } else {
+                  console.error('リダイレクトURLが空です:', redirectUrl);
                 }
               } catch (error) {
                 console.error('認証エンドポイントエラー:', error);
