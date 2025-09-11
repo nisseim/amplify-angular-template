@@ -111,10 +111,13 @@ export class TodosComponent implements OnInit {
                   console.log('リダイレクト先:', redirectUrl);
                   window.location.href = redirectUrl;
                 }, 500); // 少し時間を延ばしてログを確認しやすくする
-              } catch (error) {
+              } catch (error: unknown) {
                 console.error('認証エンドポイントエラー:', error);
-                if (error.response) {
-                  console.error('エラー詳細:', error.response.data);
+                if (error && typeof error === 'object' && 'response' in error) {
+                  const axiosError = error as { response?: { data?: any } };
+                  if (axiosError.response) {
+                    console.error('エラー詳細:', axiosError.response.data);
+                  }
                 }
               }
             } else {
