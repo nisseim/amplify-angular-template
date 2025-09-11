@@ -30,76 +30,99 @@ export class TodosComponent implements OnInit {
       }
 
       const params = new URLSearchParams(window.location.search);
-      const accessId = Number(params.get('access_id'));
+      const accessId = Number(params.get('access_id')) || 1; // デフォルト値を1に設定
 
-      const liffId = environment.liffid.split('_')[accessId];
-      // const liffId = environment.liffid;
+      // LIFF IDのマッピング（Lambda側と同じロジック）
+      const liffIdMap = {
+        1: "2006654492-V29yE2A0",
+        2: "2006654492-J8WgB7qm", 
+        3: "2006654492-aWNRDwl7"
+      };
+      
+      const liffId = liffIdMap[accessId] || liffIdMap[1];
 
       try {
-        // LIFF の初期化（liffId は実際のものに置き換えてください）
+        // LIFF の初期化
         await liff.init({ liffId: liffId });
         // LIFF の初期化完了後に ready を待つ
         await liff.ready;
-        console.log('LIFF初期化完了');
+        console.log('LIFF初期化完了, LIFF ID:', liffId);
 
         if (!liff.isLoggedIn()) {
           console.log('未ログイン: ログイン画面へ遷移します。');
-          // 未ログインの場合はログイン画面へリダイレクト（この後のコードは実行されません）
+          // 未ログインの場合はログイン画面へリダイレクト
           await liff.login();
         } else {
           // 友だち登録状態を確認
           const friend_ship = await liff.getFriendship();
-          // console.log('friend_ship:', friend_ship['friendFlag']);
+          console.log('友達登録状態:', friend_ship['friendFlag']);
 
           if (friend_ship['friendFlag'] === true) {
-            console.log('友達登録済');
+            console.log('友達登録済み');
 
             // ログイン済みの場合、アクセストークンを取得
             const accessToken = await liff.getAccessToken();
             const passwordValue = environment.password;
-            // console.log('accessToken:', accessToken);
+            
+            console.log('アクセストークン取得成功');
             if (accessToken) {
               try {
                 const URL = 'https://api.myodo-anchor.jp/auth';
-                console.log('Requesting auth endpoint:', URL);
+                console.log('認証エンドポイント呼び出し:', URL);
 
-                // API Gateway のエンドポイントに GET リクエスト
+                // API Gateway のエンドポイントに GET リクエスト（LIFF access tokenを含める）
                 const response = await axios.get(URL, {
                   params: {
-                    password  : passwordValue,
-                    access_id : accessId,
+                    password: passwordValue,
+                    access_id: accessId,
+                    liff_access_token: accessToken  // ← LIFF access tokenを追加
                   },
                   // クロスサイトリクエストの場合、withCredentials オプションが必要
                   withCredentials: true,
                 });
 
                 // レスポンスボディからクッキー情報とリダイレクト先 URL を取得
-                const { message, cookies, redirectUrl } = response.data;
-                // console.log('Response body:', { message, cookies, redirectUrl });
+                const { message, cookies, redirectUrl, userSaveResult } = response.data;
+                console.log('Lambda応答:', { message, redirectUrl, userSaveResult });
 
                 // 各クッキーを document.cookie にセット
                 for (const key in cookies) {
                   if (cookies.hasOwnProperty(key)) {
-                    // Domain は全サブドメインで共有するため、".nisseim.co.jp" を指定
-                    const cookieStr = `${key}=${cookies[key]}; Domain=.nisseim.co.jp; Path=/; Secure; SameSite=None`;
+                    // Domain は全サブドメインで共有するため、".myodo-anchor.jp" を指定
+                    const cookieStr = `${key}=${cookies[key]}; Domain=.myodo-anchor.jp; Path=/; Secure; SameSite=None`;
                     document.cookie = cookieStr;
-                    console.log('Set cookie:');
+                    console.log('クッキー設定:', key);
+                  }
+                }
+
+                // ユーザー保存結果をログ出力
+                if (userSaveResult) {
+                  if (userSaveResult.action === 'created') {
+                    console.log('新規ユーザーをDynamoDBに保存しました:', userSaveResult.userId);
+                  } else if (userSaveResult.action === 'updated') {
+                    console.log('既存ユーザーの情報を更新しました:', userSaveResult.userId);
+                  } else if (userSaveResult.action === 'error') {
+                    console.error('ユーザー保存エラー:', userSaveResult.error);
                   }
                 }
 
                 // 遷移先URLにリダイレクト
                 setTimeout(() => {
-                  console.log('Redirecting to:', redirectUrl);
+                  console.log('リダイレクト先:', redirectUrl);
                   window.location.href = redirectUrl;
-                }, 50);
+                }, 500); // 少し時間を延ばしてログを確認しやすくする
               } catch (error) {
-                console.error('Error calling the auth endpoint:', error);
+                console.error('認証エンドポイントエラー:', error);
+                if (error.response) {
+                  console.error('エラー詳細:', error.response.data);
+                }
               }
             } else {
               console.error('アクセストークンが取得できませんでした。');
             }
           } else {
-            console.error('友達登録がされていません。');
+            console.error('友達登録がされていません。友達追加してください。');
+            // 友達追加を促すメッセージ表示やUIの改善が可能
           }
         }
       } catch (err) {
@@ -111,15 +134,6 @@ export class TodosComponent implements OnInit {
   }
 
   createTodo() {
-    /*
-    try {
-      client.models.Todo.create({
-        content: window.prompt('Todo content'),
-      });
-      this.listTodos();
-    } catch (error) {
-      console.error('error creating todos', error);
-    }
-    */
+    // 今は使用しない
   }
 }
