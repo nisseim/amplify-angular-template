@@ -32,8 +32,8 @@ export class TodosComponent implements OnInit {
       const params = new URLSearchParams(window.location.search);
       const accessId = Number(params.get('access_id')) || 1;
 
-      // LIFF IDのマッピング（Lambda側と同じロジック）
-      const liffIdMap: Record<number, string> = {
+      // LIFF IDのマッピング（直接指定）
+      const liffIdMap: { [key: number]: string } = {
         1: "2006654492-V29yE2A0",
         2: "2006654492-J8WgB7qm", 
         3: "2006654492-aWNRDwl7"
@@ -68,28 +68,20 @@ export class TodosComponent implements OnInit {
                 const URL = 'https://api.myodo-anchor.jp/auth';
                 console.log('Requesting auth endpoint:', URL);
 
-                // デバッグ用アラート
-                alert('API呼び出し開始');
-
                 // API Gateway のエンドポイントに GET リクエスト（LIFF access tokenを追加）
                 const response = await axios.get(URL, {
                   params: {
                     password: passwordValue,
                     access_id: accessId,
-                    liff_access_token: accessToken  // ← これが重要！
+                    liff_access_token: accessToken  // ← 重要: これを追加
                   },
-                  timeout: 30000, // 30秒タイムアウト
-                  // withCredentials: true, // 一時的にコメントアウトしてCORS問題を回避
+                  // クロスサイトリクエストの場合、withCredentials オプションが必要
+                  withCredentials: true,
                 });
-
-                // レスポンス受信確認
-                alert(`API応答受信: ${response.status}`);
 
                 // レスポンスボディからクッキー情報とリダイレクト先 URL を取得
                 const { message, cookies, redirectUrl } = response.data;
                 console.log('Response body:', { message, cookies, redirectUrl });
-
-                alert(`リダイレクトURL: ${redirectUrl}`);
 
                 // 各クッキーを document.cookie にセット
                 if (cookies) {
@@ -103,41 +95,14 @@ export class TodosComponent implements OnInit {
                   }
                 }
 
-                // LIFF専用リダイレクト
-                if (redirectUrl) {
-                  alert('リダイレクト実行中...');
-                  try {
-                    // LIFF内部ブラウザを閉じて外部ブラウザで開く
-                    liff.openWindow({
-                      url: redirectUrl,
-                      external: true
-                    });
-                    alert('LIFF openWindow 成功');
-                  } catch (liffError) {
-                    console.log('LIFF openWindow failed, using standard redirectt');
-                    alert('通常リダイレクト実行中...');
-                    // 通常のリダイレクト
-                    setTimeout(() => {
-                      console.log('Redirecting to:', redirectUrl);
-                      window.location.href = redirectUrl;
-                    }, 50);
-                  }
-                } else {
-                  alert('リダイレクトURLが空です');
-                }
-              } catch (error: unknown) {
+                // 遷移先URLにリダイレクト
+                setTimeout(() => {
+                  alert("遷移します" + document.cookie)
+                  console.log('Redirecting to:', redirectUrl);
+                  window.location.href = redirectUrl;
+                }, 100); // 少し時間を延ばしてCookie設定を確実にする
+              } catch (error) {
                 console.error('Error calling the auth endpoint:', error);
-                
-                // 詳細なエラー情報をアラート表示
-                if (error && typeof error === 'object' && 'response' in error) {
-                  const axiosError = error as { response?: { status?: number, statusText?: string } };
-                  alert(`APIエラー: ${axiosError.response?.status} - ${axiosError.response?.statusText}`);
-                } else if (error && typeof error === 'object' && 'request' in error) {
-                  alert(`ネットワークエラー: レスポンスなし`);
-                } else {
-                  const errorMessage = error instanceof Error ? error.message : String(error);
-                  alert(`エラー: ${errorMessage}`);
-                }
               }
             } else {
               console.error('アクセストークンが取得できませんでした。');
