@@ -39,7 +39,7 @@ export class TodosComponent implements OnInit {
         3: "2006654492-aWNRDwl7",
         11: "2006654492-9JpX7adv" // access_id=11は1と同じLIFF IDを使用
       };
-      
+
       const liffId = liffIdMap[accessId] || liffIdMap[1];
 
       try {
@@ -63,7 +63,7 @@ export class TodosComponent implements OnInit {
             // ログイン済みの場合、アクセストークンを取得
             const accessToken = await liff.getAccessToken();
             const passwordValue = environment.password;
-            
+
             if (accessToken) {
               try {
                 const URL = 'https://api.myodo-anchor.jp/auth';
