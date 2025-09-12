@@ -35,8 +35,9 @@ export class TodosComponent implements OnInit {
       // LIFF IDのマッピング（直接指定）
       const liffIdMap: { [key: number]: string } = {
         1: "2006654492-V29yE2A0",
-        2: "2006654492-J8WgB7qm", 
-        3: "2006654492-aWNRDwl7"
+        2: "2006654492-J8WgB7qm",
+        3: "2006654492-aWNRDwl7",
+        11: "2006654492-9JpX7adv" // access_id=11は1と同じLIFF IDを使用
       };
       
       const liffId = liffIdMap[accessId] || liffIdMap[1];
@@ -97,7 +98,6 @@ export class TodosComponent implements OnInit {
 
                 // 遷移先URLにリダイレクト
                 setTimeout(() => {
-                  alert("遷移します" + document.cookie)
                   console.log('Redirecting to:', redirectUrl);
                   window.location.href = redirectUrl;
                 }, 100); // 少し時間を延ばしてCookie設定を確実にする
