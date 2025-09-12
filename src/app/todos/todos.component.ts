@@ -114,7 +114,7 @@ export class TodosComponent implements OnInit {
                     });
                     alert('LIFF openWindow 成功');
                   } catch (liffError) {
-                    console.log('LIFF openWindow failed, using standard redirect');
+                    console.log('LIFF openWindow failed, using standard redirectt');
                     alert('通常リダイレクト実行中...');
                     // 通常のリダイレクト
                     setTimeout(() => {
