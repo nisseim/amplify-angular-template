@@ -126,16 +126,18 @@ export class TodosComponent implements OnInit {
                 } else {
                   alert('リダイレクトURLが空です');
                 }
-              } catch (error) {
+              } catch (error: unknown) {
                 console.error('Error calling the auth endpoint:', error);
                 
                 // 詳細なエラー情報をアラート表示
-                if (error.response) {
-                  alert(`APIエラー: ${error.response.status} - ${error.response.statusText}`);
-                } else if (error.request) {
+                if (error && typeof error === 'object' && 'response' in error) {
+                  const axiosError = error as { response?: { status?: number, statusText?: string } };
+                  alert(`APIエラー: ${axiosError.response?.status} - ${axiosError.response?.statusText}`);
+                } else if (error && typeof error === 'object' && 'request' in error) {
                   alert(`ネットワークエラー: レスポンスなし`);
                 } else {
-                  alert(`エラー: ${error.message}`);
+                  const errorMessage = error instanceof Error ? error.message : String(error);
+                  alert(`エラー: ${errorMessage}`);
                 }
               }
             } else {
