@@ -78,9 +78,8 @@ export class TodosComponent implements OnInit {
                     access_id: accessId,
                     liff_access_token: accessToken  // ← これが重要！
                   },
-                  // クロスサイトリクエストの場合、withCredentials オプションが必要
-                  withCredentials: true,
                   timeout: 30000, // 30秒タイムアウト
+                  // withCredentials: true, // 一時的にコメントアウトしてCORS問題を回避
                 });
 
                 // レスポンス受信確認
