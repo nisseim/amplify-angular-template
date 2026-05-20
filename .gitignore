@@ -67,3 +67,26 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+
+# Codex security local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+credentials.json
+*-credentials.json
+service-account*.json
+*serviceAccount*.json
+*secret-only*.json
+*secretonly*.json
+*env-pre-secret*.json
+*-secret-response*.json
+.secrets/
+secrets/
+tmp/
+temp/
