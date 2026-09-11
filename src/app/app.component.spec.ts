@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { TodosComponent } from './todos/todos.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -20,10 +21,11 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('amplify-angular-template');
   });
 
-  it('should render title', () => {
+  it('should render the login redirect screen', () => {
+    spyOn(TodosComponent.prototype, 'ngOnInit').and.resolveTo();
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, amplify-angular-template');
+    expect(compiled.querySelector('app-todos h3')?.textContent).toContain('リダイレクト中');
   });
 });

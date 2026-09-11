@@ -82,7 +82,6 @@ export class TodosComponent implements OnInit {
 
                 // レスポンスボディからクッキー情報とリダイレクト先 URL を取得
                 const { message, cookies, redirectUrl } = response.data;
-                console.log('Response body:', { message, cookies, redirectUrl });
 
                 // 各クッキーを document.cookie にセット
                 if (cookies) {
@@ -98,11 +97,11 @@ export class TodosComponent implements OnInit {
 
                 // 遷移先URLにリダイレクト
                 setTimeout(() => {
-                  console.log('Redirecting to:', redirectUrl);
                   window.location.href = redirectUrl;
                 }, 100); // 少し時間を延ばしてCookie設定を確実にする
               } catch (error) {
-                console.error('Error calling the auth endpoint:', error);
+                // Axios errors can contain request credentials and response cookies.
+                console.error('Error calling the auth endpoint');
               }
             } else {
               console.error('アクセストークンが取得できませんでした。');
@@ -112,7 +111,7 @@ export class TodosComponent implements OnInit {
           }
         }
       } catch (err) {
-        console.error('LIFF 初期化エラー:', err);
+        console.error('LIFF 初期化エラー');
       }
     } else {
       console.error('LIFF SDK が読み込まれていません。');
