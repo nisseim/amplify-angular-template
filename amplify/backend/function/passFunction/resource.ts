@@ -7,4 +7,5 @@ export const myFunction = defineFunction({
     // シークレットを環境変数として定義する（Amplify コンソールでシークレット "MY_API_KEY" を事前に作成しておく必要があります）
     LIFF_ID: secret('LIFFID'),
     PASSWORD: secret('PASSWORD'),
+  },
 });
