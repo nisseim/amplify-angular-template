@@ -16,7 +16,7 @@
     },
     "body-parser@1.20.3": "1.20.6",
     "cross-spawn@7.0.3": "7.0.5",
-    "handlebars@4.7.7": "4.7.9",
+    "handlebars@4.7.7": "4.7.10",
     "http-proxy-middleware@2.0.7": "2.0.10",
     "immutable@4.3.7": "4.3.9",
     "minimatch@3.1.2": "3.1.4",
@@ -45,7 +45,6 @@
     "piscina@4.4.0": "4.9.4",
     "postcss@8.4.35": "8.5.28",
     "rollup@4.24.0": "4.63.2",
-    "shell-quote@1.8.1": "1.10.0",
     "undici@6.11.1": "6.28.1",
     "webpack@5.94.0": "5.110.3",
     "ws@8.17.1": "8.21.3",
@@ -64,7 +63,10 @@
     "@babel/core@7": "7.29.7",
     "glob@10": "10.5.0",
     "ajv@8.12.0": "8.18.0",
-    "fast-uri@3": "3.1.8"
+    "fast-uri@3": "3.1.8",
+    "source-map-js": "1.2.2",
+    "proxy-addr": "2.0.8",
+    "shell-quote": "1.11.0"
   },
   "dependencies": {
     "@angular/animations": "^17.3.0",
